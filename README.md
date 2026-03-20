@@ -204,13 +204,6 @@ Automatic payout triggered
 
 ---
 
-## System Reliability
-
-- The system uses **multiple independent APIs (3 sources)**, reducing dependency on any single data provider  
-- Even if one API fails or returns incorrect data, the system continues operating using the remaining sources  
-- This design avoids single-point failures and ensures consistent system availability  
-
----
 
 ### No Real Impact Cases
 
@@ -238,6 +231,14 @@ Automatic payout triggered
 | **GPS Spoofing** | Fake location to appear in disruption zone | Movement analysis detects unrealistic location jumps; flagged as suspicious |
 | **No Deliveries But Active Location** | Moving without completing any orders | Activity verification: movement with zero deliveries → suspicious |
 | **Coordinated Group Fraud** | Multiple users fake behaviour simultaneously | Group pattern detection identifies mass simultaneous anomalies |
+
+---
+
+## System Reliability
+
+- The system uses **multiple independent APIs (3 sources)**, reducing dependency on any single data provider  
+- Even if one API fails or returns incorrect data, the system continues operating using the remaining sources  
+- This design avoids single-point failures and ensures consistent system availability  
 
 ---
 
