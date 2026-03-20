@@ -1,6 +1,6 @@
 <div align="center">
 
-# GigShield
+# Earnly
 
 ### AI-Powered Income Protection for Delivery Partners
 
@@ -49,7 +49,7 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 
 ## Our Solution
 
-GigShield is an **AI-powered parametric insurance system** that:
+Earnly is an **AI-powered parametric insurance system** that:
 
 | Step | Action |
 |------|--------|
@@ -78,7 +78,7 @@ No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
 
 <div align="center">
 
-![GigShield Architecture](images/Workflow.jpeg)
+![Earnly Architecture](images/Workflow.jpeg)
 
 </div>
 
@@ -246,7 +246,7 @@ Automatic payout triggered
 
 ## Conclusion
 
-GigShield provides a **fair, automated, and scalable** safety net for gig economy workers.
+Earnly provides a **fair, automated, and scalable** safety net for gig economy workers.
 
 By combining real-time data intelligence with AI-driven validation, it ensures that delivery partners are compensated quickly and accurately — **without lifting a finger.**
 
