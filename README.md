@@ -22,7 +22,7 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 <tr>
 <td width="50%">
 
-### Environmental Factors
+###  Environmental Factors
 - Heavy rainfall → reduced visibility
 - Flooding → blocked roads
 - Extreme heat → limited working hours
@@ -31,7 +31,7 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 </td>
 <td width="50%">
 
-### Administrative Restrictions
+###  Administrative Restrictions
 - City-wide curfews
 - Zone closures
 - Emergency situations
