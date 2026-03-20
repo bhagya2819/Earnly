@@ -1,6 +1,6 @@
 <div align="center">
 
-# 🛡️ GigShield
+# GigShield
 
 ### AI-Powered Income Protection for Delivery Partners
 
@@ -14,7 +14,7 @@
 
 ---
 
-## 📌 The Problem
+## The Problem
 
 Food delivery partners earn entirely based on deliveries completed — no fixed salary, no safety net. Real-world conditions can wipe out their income overnight.
 
@@ -22,7 +22,7 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 <tr>
 <td width="50%">
 
-### 🌧️ Environmental Factors
+### Environmental Factors
 - Heavy rainfall → reduced visibility
 - Flooding → blocked roads
 - Extreme heat → limited working hours
@@ -31,7 +31,7 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 </td>
 <td width="50%">
 
-### 🚫 Administrative Restrictions
+### Administrative Restrictions
 - City-wide curfews
 - Zone closures
 - Emergency situations
@@ -43,38 +43,38 @@ Food delivery partners earn entirely based on deliveries completed — no fixed 
 
 **Result:** Reduced orders → Increased delivery time → **Direct income loss**
 
-❗ *No system currently exists to automatically compensate for these losses.*
+*No system currently exists to automatically compensate for these losses.*
 
 ---
 
-## 💡 Our Solution
+## Our Solution
 
 GigShield is an **AI-powered parametric insurance system** that:
 
 | Step | Action |
 |------|--------|
-| 1️⃣ | Detects real-world disruptions via live data feeds |
-| 2️⃣ | Validates authenticity across multiple trusted sources |
-| 3️⃣ | Verifies actual impact on individual rider activity |
-| 4️⃣ | **Automatically triggers payouts** — zero manual claims |
+| 1 | Detects real-world disruptions via live data feeds |
+| 2 | Validates authenticity across multiple trusted sources |
+| 3 | Verifies actual impact on individual rider activity |
+| 4 | **Automatically triggers payouts** — zero manual claims |
 
-✅ No paperwork &nbsp;&nbsp; ✅ No delays &nbsp;&nbsp; ✅ Fully automated
+No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
 
 ---
 
-## ⚡ Disruption Detection Rules
+## Disruption Detection Rules
 
 | Disruption Type | Trigger Condition |
 |---|---|
-| 🌧️ **Heavy Rainfall** | Rainfall ≥ 50 mm/hr for ≥ 2 hours |
-| 🌊 **Flooding** | Flood alert active OR traffic speed < 30% of normal |
-| 🌡️ **Extreme Heat** | Temperature ≥ 42°C for ≥ 3 hours |
-| 💨 **Air Pollution** | AQI ≥ 300 for ≥ 4 hours |
-| 🚷 **Curfew / Emergency** | Government-issued alerts active |
+|  **Heavy Rainfall** | Rainfall ≥ 50 mm/hr for ≥ 2 hours |
+|  **Flooding** | Flood alert active OR traffic speed < 30% of normal |
+|  **Extreme Heat** | Temperature ≥ 42°C for ≥ 3 hours |
+|  **Air Pollution** | AQI ≥ 300 for ≥ 4 hours |
+|  **Curfew / Emergency** | Government-issued alerts active |
 
 ---
 
-## 🏗️ Workflow
+## Workflow
 
 <div align="center">
 
@@ -82,7 +82,7 @@ GigShield is an **AI-powered parametric insurance system** that:
 
 </div>
 
-### 📡 Services Overview
+### Services Overview
 
 | Component | Role |
 |---|---|
@@ -96,68 +96,68 @@ GigShield is an **AI-powered parametric insurance system** that:
 
 ---
 
-## 🤖 Decision Engine
+## Decision Engine
 
 | Signal | Weight |
 |---|---|
-| Disruption Validity | 🔴 High |
-| Activity Impact | 🔴 High |
-| Movement Consistency | 🟡 Medium |
-| Network Reliability | 🟡 Medium |
+| Disruption Validity | High |
+| Activity Impact | High |
+| Movement Consistency | Medium |
+| Network Reliability | Medium |
 
 **Outcomes:**
-- 🟢 **High Score** → Payout triggered immediately
-- 🟡 **Medium Score** → Flagged for additional verification
-- 🔴 **Low Score** → Claim rejected
+- **High Score** → Payout triggered immediately
+- **Medium Score** → Flagged for additional verification
+- **Low Score** → Claim rejected
 
 ---
 
-## 🛡️ Adversarial Defense — GPS Spoofing
+## Adversarial Defense — GPS Spoofing
 
 | Technique | What it catches |
 |---|---|
-| 🏃 Movement Analysis | Unrealistic location jumps |
-| 📦 Activity Verification | Movement with zero deliveries |
-| 👥 Group Detection | Coordinated mass fraud patterns |
+| Movement Analysis | Unrealistic location jumps |
+| Activity Verification | Movement with zero deliveries |
+| Group Detection | Coordinated mass fraud patterns |
 
 ---
 
-## 🧰 Tech Stack
+## Tech Stack
 
 <table>
 <tr>
-<td><b>🎨 Frontend</b></td>
+<td><b>Frontend</b></td>
 <td>React (Vite), Tailwind CSS</td>
 </tr>
 <tr>
-<td><b>⚙️ Backend</b></td>
+<td><b>Backend</b></td>
 <td>Node.js, Express.js</td>
 </tr>
 <tr>
-<td><b>🤖 AI / ML</b></td>
+<td><b>AI / ML</b></td>
 <td>Python, Scikit-learn, Pandas</td>
 </tr>
 <tr>
-<td><b>🗄️ Database</b></td>
+<td><b>Database</b></td>
 <td>Firebase (Firestore + Realtime DB)</td>
 </tr>
 <tr>
-<td><b>🌍 External APIs</b></td>
+<td><b>External APIs</b></td>
 <td>OpenWeatherMap, AQI APIs, News APIs</td>
 </tr>
 <tr>
-<td><b>💳 Payments</b></td>
+<td><b>Payments</b></td>
 <td>Razorpay (Test Mode)</td>
 </tr>
 <tr>
-<td><b>🔐 Auth</b></td>
+<td><b>Auth</b></td>
 <td>Firebase Auth + JWT</td>
 </tr>
 </table>
 
 ---
 
-## 🔄 How It Works — End to End
+## How It Works — End to End
 
 ```
 User purchases weekly policy
@@ -174,27 +174,27 @@ Fraud checks executed
         ↓
 Decision engine evaluates all signals
         ↓
-💸 Automatic payout triggered
+Automatic payout triggered
 ```
 
 ---
 
-## 🎯 Key Features
+## Key Features
 
 | Feature | Description |
 |---|---|
-| ⚡ Zero-Claim Payouts | Fully automated — riders never need to file a claim |
-| 📡 Real-Time Monitoring | Continuous data streams from weather, traffic, and news |
-| 🤖 AI Risk Assessment | ML models for fraud detection and income estimation |
-| 🔒 Fraud-Resistant | Multi-layer validation and GPS anomaly detection |
-| 📅 Subscription Model | Simple weekly policy for gig workers |
-| 📈 Scalable | Modular services built to handle real-world load |
+| Zero-Claim Payouts | Fully automated — riders never need to file a claim |
+| Real-Time Monitoring | Continuous data streams from weather, traffic, and news |
+| AI Risk Assessment | ML models for fraud detection and income estimation |
+| Fraud-Resistant | Multi-layer validation and GPS anomaly detection |
+| Subscription Model | Simple weekly policy for gig workers |
+| Scalable | Modular services built to handle real-world load |
 
 ---
 
-## ⚠️ Edge Case Handling
+## Edge Case Handling
 
-### 🗄️ Data-Related Issues
+### Data-Related Issues
 
 | Scenario | Problem | How It's Handled |
 |---|---|---|
@@ -204,7 +204,7 @@ Decision engine evaluates all signals
 
 ---
 
-### 🚫 No Real Impact Cases
+### No Real Impact Cases
 
 | Scenario | Problem | How It's Handled |
 |---|---|---|
@@ -213,7 +213,7 @@ Decision engine evaluates all signals
 
 ---
 
-### ⚙️ System-Level Issues
+### System-Level Issues
 
 | Scenario | Problem | How It's Handled |
 |---|---|---|
@@ -222,7 +222,7 @@ Decision engine evaluates all signals
 
 ---
 
-### 🕵️ Fraud Cases
+### Fraud Cases
 
 | Scenario | Problem | How It's Handled |
 |---|---|---|
@@ -235,7 +235,7 @@ Decision engine evaluates all signals
 
 <div align="center">
 
-## 🏁 Conclusion
+## Conclusion
 
 GigShield provides a **fair, automated, and scalable** safety net for gig economy workers.
 
