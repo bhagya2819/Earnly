@@ -76,35 +76,11 @@ GigShield is an **AI-powered parametric insurance system** that:
 
 ## 🏗️ System Architecture
 
-GigShield follows a clean **client-server architecture** connecting a React frontend to a Node.js backend, Firebase database, and a Python ML service for intelligent validation.
+<div align="center">
 
-```
-┌─────────────────────────────────────────────────────────┐
-│                    DATA SOURCES                         │
-│     🌦 Weather API    📰 News API    📱 Rider App        │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│               NODE.JS BACKEND (API Server)              │
-│     Auth  •  Policy Management  •  Payout Logic         │
-└──────────────────────┬──────────────────────────────────┘
-                       │
-          ┌────────────┴────────────┐
-          ▼                         ▼
-┌──────────────────┐     ┌──────────────────────────────┐
-│     Firebase     │     │    Python ML Service         │
-│  (Firestore +    │     │  Disruption Validation  +    │
-│   Auth + DB)     │     │  Fraud Detection Models      │
-└──────────────────┘     └──────────────────────────────┘
-          │                         │
-          └────────────┬────────────┘
-                       ▼
-┌─────────────────────────────────────────────────────────┐
-│                  PAYMENT & ALERTS                       │
-│          Razorpay Payout  •  Notification Service       │
-└─────────────────────────────────────────────────────────┘
-```
+![GigShield Architecture](images/Workflow.jpeg)
+
+</div>
 
 ### 📡 Services Overview
 
