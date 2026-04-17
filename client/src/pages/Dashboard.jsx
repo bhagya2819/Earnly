@@ -103,7 +103,9 @@ export default function Dashboard() {
       if (disRes.status === 'fulfilled') {
         const disData = disRes.value?.data
         setDisruptions(disData?.disruptions || disData?.active || [])
-        setWeather(disData?.weather || disData?.current || null)
+        const w = disData?.weather || disData?.current
+        const aqiVal = disData?.aqi?.aqi ?? disData?.aqi
+        setWeather(w ? { ...w, aqi: aqiVal } : (aqiVal != null ? { aqi: aqiVal } : null))
       }
     } catch {
       setPolicies([])

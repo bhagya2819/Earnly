@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { registerRider } from '../services/api'
+import { registerRider, sendOtp, verifyOtp } from '../services/api'
 import toast from 'react-hot-toast'
-import { Shield, ArrowRight, ArrowLeft, User, MapPin, Briefcase, CheckCircle, Eye, EyeOff } from 'lucide-react'
+import { Shield, ArrowRight, ArrowLeft, User, MapPin, Briefcase, CheckCircle, Eye, EyeOff, Mail } from 'lucide-react'
 
 const cities = [
   'Agra', 'Ahmedabad', 'Amritsar', 'Bangalore', 'Bhopal', 'Bhubaneswar',
@@ -30,6 +30,10 @@ export default function Register() {
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
   const [cityIsOther, setCityIsOther] = useState(false)
+  const [otpStage, setOtpStage] = useState(false)
+  const [otp, setOtp] = useState('')
+  const [otpError, setOtpError] = useState('')
+  const [resendIn, setResendIn] = useState(0)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -45,6 +49,12 @@ export default function Register() {
   })
 
   const update = (field, value) => setForm((f) => ({ ...f, [field]: value }))
+
+  useEffect(() => {
+    if (resendIn <= 0) return
+    const t = setTimeout(() => setResendIn((s) => s - 1), 1000)
+    return () => clearTimeout(t)
+  }, [resendIn])
 
   // Returns the 10-digit local number if valid (accepts +91/91 country-code prefix), else null.
   const getLocalPhone = (p) => {
@@ -74,10 +84,66 @@ export default function Register() {
     return false
   }
 
-  const handleSubmit = async () => {
+  const requestOtp = async () => {
     if (!canNext()) return
     setLoading(true)
     try {
+      const phoneKey = getLocalPhone(form.phone)
+      if (!phoneKey) {
+        toast.error('Please enter a valid 10-digit phone number.')
+        return
+      }
+
+      const emailKey = form.email.trim().toLowerCase()
+      const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
+      if (registered[emailKey]) {
+        toast.error('An account with this email already exists. Please log in instead.')
+        return
+      }
+      const phoneTaken = Object.values(registered).some(
+        (r) => getLocalPhone(r?.profile?.phone) === phoneKey
+      )
+      if (phoneTaken) {
+        toast.error('An account with this phone number already exists.')
+        return
+      }
+
+      await sendOtp(emailKey)
+      setOtp('')
+      setOtpError('')
+      setOtpStage(true)
+      setResendIn(30)
+      toast.success(`We sent a 6-digit code to ${emailKey}`)
+    } catch (err) {
+      const msg = err?.response?.data?.error || 'Failed to send verification code'
+      toast.error(msg)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const resendOtp = async () => {
+    if (resendIn > 0) return
+    try {
+      await sendOtp(form.email.trim().toLowerCase())
+      setResendIn(30)
+      setOtpError('')
+      toast.success('New code sent')
+    } catch (err) {
+      const msg = err?.response?.data?.error || 'Failed to resend code'
+      const retryAfter = err?.response?.data?.retryAfter
+      if (retryAfter) setResendIn(retryAfter)
+      toast.error(msg)
+    }
+  }
+
+  const verifyAndRegister = async () => {
+    if (otp.length !== 6) return
+    setLoading(true)
+    setOtpError('')
+    try {
+      await verifyOtp(form.email.trim().toLowerCase(), otp)
+
       const uid = 'demo_' + Date.now()
       const profile = {
         uid,
@@ -100,30 +166,8 @@ export default function Register() {
         // Demo mode — backend might not be available
       }
 
-      const phoneKey = getLocalPhone(form.phone)
-      if (!phoneKey) {
-        toast.error('Please enter a valid 10-digit phone number.')
-        setLoading(false)
-        return
-      }
-
       const emailKey = form.email.trim().toLowerCase()
       const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
-
-      if (registered[emailKey]) {
-        toast.error('An account with this email already exists. Please log in instead.')
-        setLoading(false)
-        return
-      }
-      const phoneTaken = Object.values(registered).some(
-        (r) => getLocalPhone(r?.profile?.phone) === phoneKey
-      )
-      if (phoneTaken) {
-        toast.error('An account with this phone number already exists.')
-        setLoading(false)
-        return
-      }
-
       registered[emailKey] = { password: form.password, profile }
       localStorage.setItem('registeredUsers', JSON.stringify(registered))
 
@@ -131,7 +175,8 @@ export default function Register() {
       toast.success('Welcome to Earnly! Your account is ready.')
       navigate('/dashboard')
     } catch (err) {
-      toast.error(err?.response?.data?.message || 'Registration failed')
+      const msg = err?.response?.data?.error || 'Invalid or expired code'
+      setOtpError(msg)
     } finally {
       setLoading(false)
     }
@@ -175,6 +220,66 @@ export default function Register() {
 
         {/* Form */}
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8">
+          {otpStage ? (
+            <div className="space-y-5">
+              <div className="text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/30 mb-3">
+                  <Mail className="w-6 h-6 text-emerald-400" />
+                </div>
+                <h2 className="text-lg font-semibold text-white">Verify your email</h2>
+                <p className="text-sm text-gray-400 mt-1">
+                  Enter the 6-digit code we sent to<br />
+                  <span className="text-emerald-400">{form.email}</span>
+                </p>
+              </div>
+
+              <div>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  autoFocus
+                  className={`${inputClass} text-center text-2xl tracking-[0.5em] font-semibold`}
+                  placeholder="000000"
+                  value={otp}
+                  onChange={(e) => {
+                    setOtpError('')
+                    setOtp(e.target.value.replace(/\D/g, '').slice(0, 6))
+                  }}
+                />
+                {otpError && <p className="mt-2 text-xs text-red-400 text-center">{otpError}</p>}
+              </div>
+
+              <button
+                onClick={verifyAndRegister}
+                disabled={otp.length !== 6 || loading}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                {loading ? 'Verifying...' : 'Verify & Create Account'}
+                {!loading && <ArrowRight className="w-4 h-4" />}
+              </button>
+
+              <div className="flex items-center justify-between text-sm">
+                <button
+                  type="button"
+                  onClick={() => { setOtpStage(false); setOtp(''); setOtpError('') }}
+                  className="flex items-center gap-1.5 text-gray-400 hover:text-white transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  Change details
+                </button>
+                <button
+                  type="button"
+                  onClick={resendOtp}
+                  disabled={resendIn > 0}
+                  className="text-emerald-400 hover:text-emerald-300 disabled:text-gray-500 disabled:cursor-not-allowed transition-colors"
+                >
+                  {resendIn > 0 ? `Resend in ${resendIn}s` : 'Resend code'}
+                </button>
+              </div>
+            </div>
+          ) : (
+          <>
           {step === 1 && (
             <div className="space-y-4">
               <div>
@@ -384,15 +489,17 @@ export default function Register() {
               </button>
             ) : (
               <button
-                onClick={handleSubmit}
+                onClick={requestOtp}
                 disabled={!canNext() || loading}
                 className="flex items-center gap-2 px-6 py-2.5 rounded-xl text-sm font-medium bg-emerald-500 text-white hover:bg-emerald-400 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
               >
-                {loading ? 'Creating Account...' : 'Create Account'}
+                {loading ? 'Sending Code...' : 'Continue'}
                 {!loading && <ArrowRight className="w-4 h-4" />}
               </button>
             )}
           </div>
+          </>
+          )}
         </div>
 
         <p className="text-center text-sm text-gray-500 mt-6">

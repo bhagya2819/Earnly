@@ -8,6 +8,7 @@
 
 const axios = require('axios');
 const { processPayout } = require('./payoutService');
+const { sendNotificationEmail } = require('./emailService');
 
 const ML_SERVICE_URL = process.env.ML_SERVICE_URL || 'http://localhost:5001';
 
@@ -24,13 +25,27 @@ async function createNotification(db, userId, type, title, message, metadata = {
     createdAt: new Date().toISOString(),
   };
 
+  let saved = null;
   try {
     const docRef = await db.collection('notifications').add(notification);
-    return { id: docRef.id, ...notification };
+    saved = { id: docRef.id, ...notification };
   } catch (err) {
     console.error('[Notification] Failed to create notification:', err.message);
-    return null;
   }
+
+  // Fire email in the background — don't block the caller
+  (async () => {
+    try {
+      const riderDoc = await db.collection('riders').doc(userId).get();
+      const email = riderDoc.exists ? riderDoc.data().email : null;
+      if (!email) return;
+      await sendNotificationEmail(email, { type, title, message, metadata });
+    } catch (err) {
+      console.warn(`[Notification] Email send failed for ${userId}:`, err.message);
+    }
+  })();
+
+  return saved;
 }
 
 // --------------- ML Service Helpers ---------------

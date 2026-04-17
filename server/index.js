@@ -10,6 +10,7 @@ const claimsRoutes = require('./routes/claims');
 const disruptionsRoutes = require('./routes/disruptions');
 const adminRoutes = require('./routes/admin');
 const notificationsRoutes = require('./routes/notifications');
+const otpRoutes = require('./routes/otp');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -31,6 +32,7 @@ app.use('/api/claims', claimsRoutes);
 app.use('/api/disruptions', disruptionsRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/notifications', notificationsRoutes);
+app.use('/api/otp', otpRoutes);
 
 // Health check (API)
 app.get('/api/health', (req, res) => {

@@ -24,6 +24,10 @@ export const registerRider = (data) => api.post('/auth/register', data)
 export const loginRider = (data) => api.post('/auth/login', data)
 export const getProfile = (uid) => api.get(`/auth/profile/${uid}`)
 
+// OTP
+export const sendOtp = (email) => api.post('/otp/send', { email })
+export const verifyOtp = (email, otp) => api.post('/otp/verify', { email, otp })
+
 // Policies
 export const getPlans = () => api.get('/policies/plans')
 export const purchasePolicy = (data) => api.post('/policies/purchase', data)
