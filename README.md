@@ -97,7 +97,8 @@ No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
 | **Trigger Engine** | Parametric rules that auto-detect disruptions from live data |
 | **Automation Pipeline** | End-to-end claim processing: detect → validate → fraud check → approve → payout |
 | **Premium Engine** | Dynamic premium calculation based on city, zone, season, platform, claims history |
-| **Notification Service** | Real-time rider alerts for claim status updates |
+| **Notification Service** | Real-time rider alerts for claim status updates (in-app + email) |
+| **Email Service** | OTP verification on signup + transactional notification emails via Nodemailer + SMTP |
 
 ---
 
@@ -108,28 +109,30 @@ No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
 ```
 1. Rider registers (name, city, zone, platform, vehicle, earnings)
         ↓
-2. Logs in → Dashboard shows stats, weather, active disruptions
+2. Verifies email via 6-digit OTP (sent over SMTP, 10 min TTL)
         ↓
-3. Purchases weekly policy (Basic ₹49 / Standard ₹99 / Premium ₹149)
+3. Logs in → Dashboard shows stats, weather, active disruptions
         ↓
-4. System monitors environment in real-time
+4. Purchases weekly policy (Basic ₹49 / Standard ₹99 / Premium ₹149)
         ↓
-5. Disruption detected (weather API + AQI API + news API)
+5. System monitors environment in real-time
         ↓
-6. Multi-source validation (≥ 2/3 sources must agree)
+6. Disruption detected (weather API + AQI API + news API)
         ↓
-7. Automation pipeline triggers for all affected riders
+7. Multi-source validation (≥ 2/3 sources must agree)
         ↓
-8. ML fraud check per rider (IsolationForest model)
+8. Automation pipeline triggers for all affected riders
         ↓
-9. Payout calculated based on earnings, disruption severity, coverage %
+9. ML fraud check per rider (IsolationForest model)
         ↓
-10. Decision engine:
+10. Payout calculated based on earnings, disruption severity, coverage %
+        ↓
+11. Decision engine:
      • fraud_score < 0.5 → Auto-approved
      • fraud_score > 0.7 → Auto-rejected
      • Otherwise → Flagged for manual review
         ↓
-11. Payout processed + rider notified in real-time
+12. Payout processed + rider notified in real-time (in-app + email)
 ```
 
 ### Admin Journey
@@ -290,6 +293,13 @@ The Python ML microservice powers four core capabilities:
 | PATCH | `/:notificationId/read` | Mark notification as read |
 | PATCH | `/read-all/:uid` | Mark all as read |
 
+### Email OTP (`/api/otp`)
+
+| Method | Endpoint | Purpose |
+|---|---|---|
+| POST | `/send` | Generate and email a 6-digit OTP (10 min TTL, 30s resend cooldown) |
+| POST | `/verify` | Verify the OTP submitted during signup |
+
 ---
 
 ## Tech Stack
@@ -321,7 +331,11 @@ The Python ML microservice powers four core capabilities:
 </tr>
 <tr>
 <td><b>Auth</b></td>
-<td>Firebase Auth + JWT</td>
+<td>Firebase Auth + JWT + email OTP verification</td>
+</tr>
+<tr>
+<td><b>Email</b></td>
+<td>Nodemailer over SMTP (Gmail / Google Workspace) for OTP and notification delivery</td>
 </tr>
 <tr>
 <td><b>Deployment</b></td>
@@ -390,7 +404,8 @@ The Python ML microservice powers four core capabilities:
 | **Admin Controls** | Override claims, simulate disruptions, monitor live feed, view fraud flags |
 | **Risk Profiling** | Per-rider risk score with detailed factor breakdown |
 | **Loyalty Rewards** | Premium discount for 4+ consecutive weeks of coverage |
-| **Notification System** | Real-time bell notifications for claim status updates |
+| **Notification System** | Real-time in-app bell notifications and matching email delivery for claim status updates |
+| **Email OTP Verification** | 6-digit code sent at signup with TTL, resend cooldown, and attempt limits to block abuse |
 
 ---
 
