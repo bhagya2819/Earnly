@@ -35,8 +35,16 @@ export default function Register() {
 
   const update = (field, value) => setForm((f) => ({ ...f, [field]: value }))
 
+  // Returns the 10-digit local number if valid (accepts +91/91 country-code prefix), else null.
+  const getLocalPhone = (p) => {
+    const d = (p || '').replace(/\D/g, '')
+    if (d.length === 10) return d
+    if (d.length === 12 && d.startsWith('91')) return d.slice(2)
+    return null
+  }
+
   const canNext = () => {
-    if (step === 1) return form.name && form.email && form.phone && form.password
+    if (step === 1) return form.name && form.email && getLocalPhone(form.phone) && form.password
     if (step === 2) return form.city && form.zone && form.platform
     if (step === 3) return form.vehicleType && form.avgWeeklyEarnings && form.workingHoursPerDay
     return false
@@ -67,9 +75,14 @@ export default function Register() {
         // Demo mode — backend might not be available
       }
 
+      const phoneKey = getLocalPhone(form.phone)
+      if (!phoneKey) {
+        toast.error('Please enter a valid 10-digit phone number.')
+        setLoading(false)
+        return
+      }
+
       const emailKey = form.email.trim().toLowerCase()
-      const normalizePhone = (p) => (p || '').replace(/\D/g, '')
-      const phoneKey = normalizePhone(form.phone)
       const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
 
       if (registered[emailKey]) {
@@ -78,7 +91,7 @@ export default function Register() {
         return
       }
       const phoneTaken = Object.values(registered).some(
-        (r) => normalizePhone(r?.profile?.phone) === phoneKey
+        (r) => getLocalPhone(r?.profile?.phone) === phoneKey
       )
       if (phoneTaken) {
         toast.error('An account with this phone number already exists.')
@@ -168,6 +181,9 @@ export default function Register() {
                   value={form.phone}
                   onChange={(e) => update('phone', e.target.value)}
                 />
+                {form.phone && !getLocalPhone(form.phone) && (
+                  <p className="mt-1.5 text-xs text-red-400">Please enter a valid 10-digit phone number.</p>
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
