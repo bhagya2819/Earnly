@@ -68,12 +68,24 @@ export default function Register() {
       }
 
       const emailKey = form.email.trim().toLowerCase()
+      const normalizePhone = (p) => (p || '').replace(/\D/g, '')
+      const phoneKey = normalizePhone(form.phone)
       const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
+
       if (registered[emailKey]) {
         toast.error('An account with this email already exists. Please log in instead.')
         setLoading(false)
         return
       }
+      const phoneTaken = Object.values(registered).some(
+        (r) => normalizePhone(r?.profile?.phone) === phoneKey
+      )
+      if (phoneTaken) {
+        toast.error('An account with this phone number already exists.')
+        setLoading(false)
+        return
+      }
+
       registered[emailKey] = { password: form.password, profile }
       localStorage.setItem('registeredUsers', JSON.stringify(registered))
 
