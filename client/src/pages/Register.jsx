@@ -36,6 +36,7 @@ export default function Register() {
     phone: '',
     password: '',
     city: '',
+    pincode: '',
     zone: '',
     platform: '',
     vehicleType: '',
@@ -57,9 +58,12 @@ export default function Register() {
   const isStrongPassword = (p) =>
     !!p && p.length >= 6 && /[A-Z]/.test(p) && /\d/.test(p) && /[^A-Za-z0-9]/.test(p)
 
+  // Indian pincode: exactly 6 digits, first digit 1-9.
+  const isValidPincode = (p) => /^[1-9]\d{5}$/.test((p || '').trim())
+
   const canNext = () => {
     if (step === 1) return form.name && form.email && getLocalPhone(form.phone) && isStrongPassword(form.password)
-    if (step === 2) return form.city && form.zone && form.platform
+    if (step === 2) return form.city && isValidPincode(form.pincode) && form.zone && form.platform
     if (step === 3) return form.vehicleType && form.avgWeeklyEarnings && form.workingHoursPerDay
     return false
   }
@@ -75,6 +79,7 @@ export default function Register() {
         email: form.email,
         phone: form.phone,
         city: form.city,
+        pincode: form.pincode,
         zone: form.zone,
         platform: form.platform,
         vehicleType: form.vehicleType,
@@ -259,6 +264,21 @@ export default function Register() {
                     value={form.city}
                     onChange={(e) => update('city', e.target.value)}
                   />
+                )}
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-1.5">Pincode</label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  className={inputClass}
+                  placeholder="e.g. 560001"
+                  value={form.pincode}
+                  onChange={(e) => update('pincode', e.target.value.replace(/\D/g, '').slice(0, 6))}
+                />
+                {form.pincode && !isValidPincode(form.pincode) && (
+                  <p className="mt-1.5 text-xs text-red-400">Please enter a valid 6-digit pincode.</p>
                 )}
               </div>
               <div>
