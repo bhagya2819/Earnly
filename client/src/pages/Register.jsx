@@ -5,7 +5,15 @@ import { registerRider } from '../services/api'
 import toast from 'react-hot-toast'
 import { Shield, ArrowRight, ArrowLeft, User, MapPin, Briefcase, CheckCircle, Eye, EyeOff } from 'lucide-react'
 
-const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Jaipur']
+const cities = [
+  'Agra', 'Ahmedabad', 'Amritsar', 'Bangalore', 'Bhopal', 'Bhubaneswar',
+  'Chandigarh', 'Chennai', 'Coimbatore', 'Dehradun', 'Delhi', 'Faridabad',
+  'Ghaziabad', 'Gurugram', 'Guwahati', 'Hyderabad', 'Indore', 'Jaipur',
+  'Kanpur', 'Kochi', 'Kolkata', 'Lucknow', 'Ludhiana', 'Madurai',
+  'Mangalore', 'Meerut', 'Mumbai', 'Mysore', 'Nagpur', 'Nashik',
+  'Noida', 'Patna', 'Pune', 'Raipur', 'Rajkot', 'Ranchi',
+  'Surat', 'Thane', 'Vadodara', 'Varanasi', 'Vijayawada', 'Visakhapatnam',
+]
 const platforms = ['Zomato', 'Swiggy', 'Zepto', 'Blinkit', 'Amazon', 'Flipkart']
 const vehicleTypes = ['Bike', 'Scooter', 'Bicycle', 'Car']
 
@@ -21,6 +29,7 @@ export default function Register() {
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
   const [showPassword, setShowPassword] = useState(false)
+  const [cityIsOther, setCityIsOther] = useState(false)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -224,14 +233,33 @@ export default function Register() {
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">City</label>
                 <select
                   className={selectClass}
-                  value={form.city}
-                  onChange={(e) => update('city', e.target.value)}
+                  value={cityIsOther ? 'Others' : form.city}
+                  onChange={(e) => {
+                    const v = e.target.value
+                    if (v === 'Others') {
+                      setCityIsOther(true)
+                      update('city', '')
+                    } else {
+                      setCityIsOther(false)
+                      update('city', v)
+                    }
+                  }}
                 >
                   <option value="" className="bg-[#0f172a]">Select your city</option>
                   {cities.map((c) => (
                     <option key={c} value={c} className="bg-[#0f172a]">{c}</option>
                   ))}
+                  <option value="Others" className="bg-[#0f172a]">Others</option>
                 </select>
+                {cityIsOther && (
+                  <input
+                    type="text"
+                    className={`${inputClass} mt-2`}
+                    placeholder="Enter your city name"
+                    value={form.city}
+                    onChange={(e) => update('city', e.target.value)}
+                  />
+                )}
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">Zone / Area</label>
