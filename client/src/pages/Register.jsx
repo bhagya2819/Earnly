@@ -43,8 +43,12 @@ export default function Register() {
     return null
   }
 
+  // Strong password: min 6 chars, at least 1 uppercase, 1 digit, 1 special char.
+  const isStrongPassword = (p) =>
+    !!p && p.length >= 6 && /[A-Z]/.test(p) && /\d/.test(p) && /[^A-Za-z0-9]/.test(p)
+
   const canNext = () => {
-    if (step === 1) return form.name && form.email && getLocalPhone(form.phone) && form.password
+    if (step === 1) return form.name && form.email && getLocalPhone(form.phone) && isStrongPassword(form.password)
     if (step === 2) return form.city && form.zone && form.platform
     if (step === 3) return form.vehicleType && form.avgWeeklyEarnings && form.workingHoursPerDay
     return false
@@ -190,10 +194,15 @@ export default function Register() {
                 <input
                   type="password"
                   className={inputClass}
-                  placeholder="Min 6 characters"
+                  placeholder="Min 6 chars, 1 uppercase, 1 number, 1 special"
                   value={form.password}
                   onChange={(e) => update('password', e.target.value)}
                 />
+                {form.password && !isStrongPassword(form.password) && (
+                  <p className="mt-1.5 text-xs text-red-400">
+                    Password must be at least 6 characters and include one uppercase letter, one number, and one special character.
+                  </p>
+                )}
               </div>
             </div>
           )}
