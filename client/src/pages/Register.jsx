@@ -3,7 +3,7 @@ import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import { registerRider } from '../services/api'
 import toast from 'react-hot-toast'
-import { Shield, ArrowRight, ArrowLeft, User, MapPin, Briefcase, CheckCircle } from 'lucide-react'
+import { Shield, ArrowRight, ArrowLeft, User, MapPin, Briefcase, CheckCircle, Eye, EyeOff } from 'lucide-react'
 
 const cities = ['Mumbai', 'Delhi', 'Bangalore', 'Hyderabad', 'Chennai', 'Kolkata', 'Pune', 'Jaipur']
 const platforms = ['Zomato', 'Swiggy', 'Zepto', 'Blinkit', 'Amazon', 'Flipkart']
@@ -20,6 +20,7 @@ export default function Register() {
   const { demoLogin } = useAuth()
   const [step, setStep] = useState(1)
   const [loading, setLoading] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -191,13 +192,23 @@ export default function Register() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-300 mb-1.5">Password</label>
-                <input
-                  type="password"
-                  className={inputClass}
-                  placeholder="Min 6 chars, 1 uppercase, 1 number, 1 special"
-                  value={form.password}
-                  onChange={(e) => update('password', e.target.value)}
-                />
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    className={`${inputClass} pr-11`}
+                    placeholder="Min 6 chars, 1 uppercase, 1 number, 1 special"
+                    value={form.password}
+                    onChange={(e) => update('password', e.target.value)}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((s) => !s)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                    className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-emerald-400 transition-colors"
+                  >
+                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  </button>
+                </div>
                 {form.password && !isStrongPassword(form.password) && (
                   <p className="mt-1.5 text-xs text-red-400">
                     Password must be at least 6 characters and include one uppercase letter, one number, and one special character.
