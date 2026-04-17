@@ -61,10 +61,16 @@ export default function Register() {
   // Indian pincode: exactly 6 digits, first digit 1-9.
   const isValidPincode = (p) => /^[1-9]\d{5}$/.test((p || '').trim())
 
+  // Working hours per day must be a number in (0, 24].
+  const isValidWorkingHours = (h) => {
+    const n = Number(h)
+    return Number.isFinite(n) && n > 0 && n <= 24
+  }
+
   const canNext = () => {
     if (step === 1) return form.name && form.email && getLocalPhone(form.phone) && isStrongPassword(form.password)
     if (step === 2) return form.city && isValidPincode(form.pincode) && form.zone && form.platform
-    if (step === 3) return form.vehicleType && form.avgWeeklyEarnings && form.workingHoursPerDay
+    if (step === 3) return form.vehicleType && form.avgWeeklyEarnings && isValidWorkingHours(form.workingHoursPerDay)
     return false
   }
 
@@ -344,11 +350,12 @@ export default function Register() {
                   type="number"
                   className={inputClass}
                   placeholder="e.g. 8"
-                  min="1"
-                  max="24"
                   value={form.workingHoursPerDay}
                   onChange={(e) => update('workingHoursPerDay', e.target.value)}
                 />
+                {form.workingHoursPerDay !== '' && !isValidWorkingHours(form.workingHoursPerDay) && (
+                  <p className="mt-1.5 text-xs text-red-400">Please enter valid hours between 1 to 24.</p>
+                )}
               </div>
             </div>
           )}
