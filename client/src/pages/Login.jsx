@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { loginRider, registerRider } from '../services/api'
+import { registerRider } from '../services/api'
 import toast from 'react-hot-toast'
 import { Shield, LogIn, Zap } from 'lucide-react'
 
@@ -17,11 +17,20 @@ export default function Login() {
     if (!email || !password) return toast.error('Please fill in all fields')
     setLoading(true)
     try {
-      const res = await loginRider({ email, password })
-      const profile = res.data?.user || res.data
-      localStorage.setItem('authToken', res.data?.token || '')
-      localStorage.setItem('userProfile', JSON.stringify(profile))
-      demoLogin(profile)
+      const emailKey = email.trim().toLowerCase()
+      const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
+      const record = registered[emailKey]
+
+      if (!record) {
+        toast.error('No account found for this email. Please register first.')
+        return
+      }
+      if (record.password !== password) {
+        toast.error('Incorrect password. Please try again.')
+        return
+      }
+
+      demoLogin(record.profile)
       toast.success('Welcome back!')
       navigate('/dashboard')
     } catch (err) {

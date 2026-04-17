@@ -67,6 +67,16 @@ export default function Register() {
         // Demo mode — backend might not be available
       }
 
+      const emailKey = form.email.trim().toLowerCase()
+      const registered = JSON.parse(localStorage.getItem('registeredUsers') || '{}')
+      if (registered[emailKey]) {
+        toast.error('An account with this email already exists. Please log in instead.')
+        setLoading(false)
+        return
+      }
+      registered[emailKey] = { password: form.password, profile }
+      localStorage.setItem('registeredUsers', JSON.stringify(registered))
+
       demoLogin(profile)
       toast.success('Welcome to Earnly! Your account is ready.')
       navigate('/dashboard')
