@@ -6,6 +6,7 @@ const { getAQI } = require('../services/aqiService');
 const { getAlerts } = require('../services/newsService');
 const { evaluateTriggers } = require('../services/triggerEngine');
 const { processDisruption } = require('../services/automationPipeline');
+const disruptionScheduler = require('../services/disruptionScheduler');
 
 // GET /api/disruptions/current/:city - Fetch current weather + AQI for a city
 router.get('/current/:city', async (req, res) => {
@@ -125,6 +126,17 @@ router.post('/simulate', async (req, res) => {
   } catch (err) {
     console.error('[Disruptions] Simulate error:', err.message);
     res.status(500).json({ error: 'Simulation failed', details: err.message });
+  }
+});
+
+// POST /api/disruptions/scan-now - Admin: run the scheduler once immediately
+router.post('/scan-now', async (req, res) => {
+  try {
+    const summary = await disruptionScheduler.runOnce();
+    res.json({ message: 'Scan complete', summary });
+  } catch (err) {
+    console.error('[Disruptions] Scan error:', err.message);
+    res.status(500).json({ error: 'Scan failed', details: err.message });
   }
 });
 

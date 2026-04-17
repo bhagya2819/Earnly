@@ -95,6 +95,7 @@ No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
 | **Firebase** | User data, policies, claims, disruptions, notifications, real-time updates |
 | **Python ML Service** | Fraud detection, risk scoring, disruption validation, payout calculation |
 | **Trigger Engine** | Parametric rules that auto-detect disruptions from live data |
+| **Disruption Scheduler** | `node-cron` job (every 15 min by default) that polls weather + AQI for every city with active riders and feeds new triggers into the automation pipeline |
 | **Automation Pipeline** | End-to-end claim processing: detect → validate → fraud check → approve → payout |
 | **Premium Engine** | Dynamic premium calculation based on city, zone, season, platform, claims history |
 | **Notification Service** | Real-time rider alerts for claim status updates (in-app + email) |
@@ -115,11 +116,11 @@ No paperwork &nbsp;&nbsp; No delays &nbsp;&nbsp; Fully automated
         ↓
 4. Purchases weekly policy (Basic ₹49 / Standard ₹99 / Premium ₹149)
         ↓
-5. System monitors environment in real-time
+5. Scheduler polls weather + AQI every 15 min for every city where riders are active
         ↓
-6. Disruption detected (weather API + AQI API + news API)
+6. Trigger engine evaluates parametric rules against live weather and AQI readings
         ↓
-7. Multi-source validation (≥ 2/3 sources must agree)
+7. ML cross-references the two sources — pipeline proceeds only when at least one source confirms the event
         ↓
 8. Automation pipeline triggers for all affected riders
         ↓
@@ -194,9 +195,9 @@ The Python ML microservice powers four core capabilities:
 - Returns `premium_multiplier` (0.5 – 5.0) used in premium calculation
 
 ### Disruption Validation (`POST /api/validate-disruption`)
-- Cross-references 3 independent sources (weather, AQI, news)
-- Validates: rainfall thresholds, wind speed, temperature extremes, AQI levels, news keywords
-- **Rule:** At least 2 of 3 sources must agree for a valid disruption
+- Cross-references 2 live sources (weather, AQI) — news feed is currently disabled, so the Node pipeline accepts the event when at least one source agrees
+- Validates: rainfall thresholds, wind speed, temperature extremes, AQI levels
+- The ML service still computes a 3-source agreement score for backwards compatibility; callers that re-enable news get the stricter 2-of-3 rule for free
 
 ### Payout Calculation (`POST /api/calculate-payout`)
 - Estimates income loss based on rider earnings + disruption duration
@@ -262,6 +263,7 @@ The Python ML microservice powers four core capabilities:
 |---|---|---|
 | GET | `/current/:city` | Fetch live weather + AQI + alerts |
 | POST | `/check-triggers` | Evaluate parametric trigger rules |
+| POST | `/scan-now` | Admin: run the scheduler once immediately across all rider cities |
 | POST | `/simulate` | Admin: simulate a disruption |
 | POST | `/process` | Admin: reprocess an existing disruption |
 | GET | `/history/:city` | Get past disruptions for a city |
@@ -323,7 +325,11 @@ The Python ML microservice powers four core capabilities:
 </tr>
 <tr>
 <td><b>External APIs</b></td>
-<td>OpenWeatherMap, WAQI (Air Quality), NewsAPI</td>
+<td>OpenWeatherMap, WAQI (Air Quality) — NewsAPI is wired in code but currently disabled</td>
+</tr>
+<tr>
+<td><b>Scheduling</b></td>
+<td>node-cron (disruption scanner runs every 15 min per configured cities)</td>
 </tr>
 <tr>
 <td><b>Payments</b></td>
@@ -383,8 +389,8 @@ The Python ML microservice powers four core capabilities:
 
 ## System Reliability
 
-- The system uses **3 independent data sources** (Weather API, AQI API, News API), reducing dependency on any single provider
-- If one API fails, the system continues with remaining sources + cached fallbacks
+- The system uses **2 live data sources** today (Weather API + AQI API), with NewsAPI integration available but disabled; enabling it flips the validator back to the stricter 2-of-3 rule
+- If one API fails, the system continues with the remaining source plus per-city mock fallbacks so the pipeline never blocks
 - If the ML service is unavailable, the backend falls back to rule-based severity scoring and formula-based payout calculations
 - Unique event IDs prevent duplicate claim processing
 - Modular microservice architecture allows independent scaling and deployment
@@ -396,10 +402,11 @@ The Python ML microservice powers four core capabilities:
 | Feature | Description |
 |---|---|
 | **Zero-Claim Payouts** | Fully automated — riders never need to file a claim |
-| **Real-Time Monitoring** | Continuous data streams from weather, traffic, and news APIs |
+| **Scheduled Auto-Detection** | `node-cron` runs every 15 min to poll weather and AQI for every active rider city and trigger the full payout pipeline when thresholds breach |
+| **Real-Time Monitoring** | Continuous data streams from weather and AQI APIs (news feed wired but disabled by default) |
 | **AI Fraud Detection** | IsolationForest ML model + rule-based checks across 8 behavioral features |
 | **Dynamic Premiums** | Personalized pricing based on city, zone, season, platform, and history |
-| **Multi-Source Validation** | At least 2 of 3 independent sources must agree before triggering |
+| **Multi-Source Validation** | ML cross-references weather + AQI live; pipeline advances only when at least one source confirms (re-enabling news switches to the stricter 2-of-3 rule) |
 | **Instant Auto-Payouts** | Claims auto-approved in seconds when fraud score is low |
 | **Admin Controls** | Override claims, simulate disruptions, monitor live feed, view fraud flags |
 | **Risk Profiling** | Per-rider risk score with detailed factor breakdown |

@@ -11,6 +11,7 @@ const disruptionsRoutes = require('./routes/disruptions');
 const adminRoutes = require('./routes/admin');
 const notificationsRoutes = require('./routes/notifications');
 const otpRoutes = require('./routes/otp');
+const disruptionScheduler = require('./services/disruptionScheduler');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -67,6 +68,7 @@ app.listen(PORT, () => {
   console.log(`\n  Earnly API server running on port ${PORT}`);
   console.log(`  Health check: http://localhost:${PORT}/`);
   console.log(`  Environment: ${process.env.NODE_ENV || 'development'}\n`);
+  disruptionScheduler.start();
 });
 
 module.exports = app;

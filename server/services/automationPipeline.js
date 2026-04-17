@@ -51,12 +51,27 @@ async function createNotification(db, userId, type, title, message, metadata = {
 // --------------- ML Service Helpers ---------------
 
 async function callMLValidateDisruption(disruption) {
+  const w = disruption.weatherSnapshot;
+  const a = disruption.aqiSnapshot;
+
+  // Skip ML validation if we don't have source snapshots (e.g., simulated disruptions).
+  // The caller falls back to disruption.confidence in that case.
+  if (!w && !a) return null;
+
+  const weatherData = w ? {
+    rainfall_mm: w.rainfall ?? 0,
+    wind_speed_kmh: w.windSpeed ?? 0,
+    temperature_celsius: w.temp,
+  } : {};
+
+  const aqiData = a ? { aqi: a.aqi ?? 0 } : {};
+
   try {
     const res = await axios.post(`${ML_SERVICE_URL}/api/validate-disruption`, {
-      type: disruption.type,
+      weatherData,
+      aqiData,
+      newsAlerts: [],
       city: disruption.city,
-      severity: disruption.severity,
-      duration: disruption.estimatedDuration || disruption.duration,
     }, { timeout: 5000 });
     return res.data;
   } catch (err) {
@@ -153,14 +168,15 @@ async function processDisruption(disruption, db) {
 
   console.log(`[AutoPipeline] Processing disruption: ${disruption.type} in ${disruption.city}`);
 
-  // Step 1: Validate disruption via ML
+  // Step 1: Validate disruption via ML (cross-reference weather + AQI)
   const validation = await callMLValidateDisruption(disruption);
   const disruptionConfidence = validation
     ? (validation.confidence || validation.disruption_confidence || 0.8)
     : disruption.confidence || 1.0;
 
-  if (validation && disruptionConfidence < 0.3) {
-    console.log('[AutoPipeline] Disruption confidence too low, skipping.');
+  // Skip only when every data source disagrees — a sign the trigger was spurious.
+  if (validation && validation.agreeing_sources === 0) {
+    console.log('[AutoPipeline] No data source confirms the disruption, skipping.');
     return results;
   }
 
